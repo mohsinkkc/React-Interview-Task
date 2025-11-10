@@ -1,15 +1,99 @@
-body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f7f7f8; color:#111 }
-.header { display:flex; justify-content:space-between; align-items:center; padding:12px 20px; background:#0b5; color:#fff }
-.header nav a { margin-right:12px; color:#fff; text-decoration:none }
-.container { padding:20px; max-width:1000px; margin:20px auto; background:#fff; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.05) }
-.card { padding:16px; border:1px solid #eee; border-radius:8px; margin-bottom:16px; background:#fff }
-.table { width:100%; border-collapse:collapse; margin-top:12px }
-.table th, .table td { border:1px solid #eee; padding:8px; text-align:left }
-.btn { background:#0b5; color:#fff; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; margin-left:8px }
-.btn.small { padding:6px 8px; font-size:13px }
-.btn.danger { background:#d33 }
-.error { color:#d33; margin-top:8px }
-label { display:block; margin-top:8px }
-input { width:100%; padding:8px; margin-top:4px; box-sizing:border-box }
-.crud { display:flex; gap:16px; align-items:flex-start }
-.table-wrap { flex:1; overflow:auto }
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f7f7f8;
+    color: #111
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    background: #0b5;
+    color: #fff
+}
+
+.header nav a {
+    margin-right: 12px;
+    color: #fff;
+    text-decoration: none
+}
+
+.container {
+    padding: 20px;
+    max-width: 1000px;
+    margin: 20px auto;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05)
+}
+
+.card {
+    padding: 16px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    background: #fff
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px
+}
+
+.table th,
+.table td {
+    border: 1px solid #eee;
+    padding: 8px;
+    text-align: left
+}
+
+.btn {
+    background: #0b5;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-left: 8px
+}
+
+.btn.small {
+    padding: 6px 8px;
+    font-size: 13px
+}
+
+.btn.danger {
+    background: #d33
+}
+
+.error {
+    color: #d33;
+    margin-top: 8px
+}
+
+label {
+    display: block;
+    margin-top: 8px
+}
+
+input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 4px;
+    box-sizing: border-box
+}
+
+.crud {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start
+}
+
+.table-wrap {
+    flex: 1;
+    overflow: auto
+}

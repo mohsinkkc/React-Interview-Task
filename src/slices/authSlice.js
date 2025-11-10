@@ -17,8 +17,6 @@ export const login = createAsyncThunk('auth/login', async (credentials, { reject
 
 export const register = createAsyncThunk('auth/register', async (payload, { rejectWithValue }) => {
   try {
-    // DummyJSON doesn't have a real register endpoint; we'll simulate by returning payload
-    // In a real app you'd call your backend here.
     return {
       ...payload,
       id: Math.floor(Math.random() * 10000),

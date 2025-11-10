@@ -13,10 +13,8 @@ export default function Login() {
     e.preventDefault()
     try {
       const res = await dispatch(login(form)).unwrap()
-      // on success redirect
       navigate('/')
     } catch (err) {
-      // error handled in slice
     }
   }
 
@@ -31,7 +29,6 @@ export default function Login() {
         <button className="btn" type="submit" disabled={auth.loading}>Login</button>
         {auth.error && <div className="error">{auth.error}</div>}
       </form>
-      <p>Tip: Use dummyjson login credentials — username: <code>kminchelle</code> password: <code>0lelplR</code> (example)</p>
-    </div>
+     </div>
   )
 }
