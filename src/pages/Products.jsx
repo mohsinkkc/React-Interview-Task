@@ -4,13 +4,21 @@ import { fetchProducts } from '../slices/productsSlice';
 
 export default function Products() {
   const dispatch = useDispatch();
-  const { items, loading, error, total } = useSelector(s => s.products);
-  const [page, setPage] = useState(1);
-  const perPage = 20; // how many to show per page
+  const { items, loading, error, total } = useSelector((s) => s.products);
+
+  // 🧭 Persistent pagination
+  const savedPage = Number(localStorage.getItem('productsPage') || 1);
+  const [page, setPage] = useState(savedPage);
+  const perPage = 20; // how many products per page
 
   useEffect(() => {
     dispatch(fetchProducts());
   }, [dispatch]);
+
+  // Save page in localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('productsPage', page);
+  }, [page]);
 
   const totalPages = Math.ceil(total / perPage);
   const start = (page - 1) * perPage;
@@ -18,17 +26,22 @@ export default function Products() {
 
   return (
     <div>
-      <h2>Products</h2>
+      <h2>Product List</h2>
       {loading && <div>Loading...</div>}
       {error && <div className="error">{error}</div>}
       <div>Total records: {total}</div>
 
       <table className="table">
         <thead>
-          <tr><th>ID</th><th>Title</th><th>Price</th><th>Category</th></tr>
+          <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Price</th>
+            <th>Category</th>
+          </tr>
         </thead>
         <tbody>
-          {paginated.map(p => (
+          {paginated.map((p) => (
             <tr key={p.id}>
               <td>{p.id}</td>
               <td>{p.title}</td>
@@ -40,10 +53,10 @@ export default function Products() {
       </table>
 
       {/* Pagination Controls */}
-      <div style={{ marginTop: '15px', display: 'flex', justifyContent: 'center', gap: '8px' }}>
-        <button disabled={page === 1} onClick={() => setPage(p => p - 1)}>Prev</button>
+      <div style={{ marginTop: '15px', display: 'flex', justifyContent: 'center', gap: '10px' }}>
+        <button disabled={page === 1} onClick={() => setPage((p) => p - 1)}>Prev</button>
         <span>Page {page} of {totalPages}</span>
-        <button disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>Next</button>
+        <button disabled={page === totalPages} onClick={() => setPage((p) => p + 1)}>Next</button>
       </div>
     </div>
   );
