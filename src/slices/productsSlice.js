@@ -1,44 +1,80 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import axios from 'axios'
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axios from 'axios';
 
-const API_BASE = 'https://dummyjson.com'
+const API_BASE = 'https://dummyjson.com';
 
+// Helpers for local persistence
+const loadLocal = () => JSON.parse(localStorage.getItem('localProducts') || '[]');
+const saveLocal = (data) => localStorage.setItem('localProducts', JSON.stringify(data));
+
+// Fetch products (API + local merged)
 export const fetchProducts = createAsyncThunk('products/fetch', async (_, { rejectWithValue }) => {
   try {
-    const res = await axios.get(`${API_BASE}/products`)
-    return res.data
-  } catch (err) {
-    return rejectWithValue(err.message || 'Could not fetch products')
-  }
-})
+    const res = await axios.get(`${API_BASE}/products?limit=200`);
+    const apiProducts = res.data.products || [];
 
-export const addProduct = createAsyncThunk('products/add', async (product, { rejectWithValue }) => {
+    // Load locally stored items
+    const local = loadLocal();
+
+    // Merge API + local products
+    const merged = [...apiProducts, ...local];
+    return { products: merged, total: merged.length };
+  } catch (err) {
+    return rejectWithValue(err.message || 'Could not fetch products');
+  }
+});
+
+// Add product with sequential ID
+export const addProduct = createAsyncThunk('products/add', async (product, { getState, rejectWithValue }) => {
   try {
-    // DummyJSON supports adding product via /products/add but it's ok to simulate
-    const res = await axios.post(`${API_BASE}/products/add`, product)
-    return res.data
-  } catch (err) {
-    return rejectWithValue(err.message || 'Add product failed')
-  }
-})
+    const state = getState().products;
+    const allItems = state.items || [];
 
+    const maxId = allItems.reduce((max, p) => Math.max(max, p.id), 0);
+    const newId = maxId + 1;
+
+    const newProduct = { id: newId, ...product, local: true };
+
+    // Save locally
+    const local = loadLocal();
+    local.push(newProduct);
+    saveLocal(local);
+
+    return newProduct;
+  } catch (err) {
+    return rejectWithValue(err.message || 'Add product failed');
+  }
+});
+
+// Update product (local only)
 export const updateProduct = createAsyncThunk('products/update', async ({ id, data }, { rejectWithValue }) => {
   try {
-    const res = await axios.put(`${API_BASE}/products/${id}`, data)
-    return res.data
-  } catch (err) {
-    return rejectWithValue(err.message || 'Update failed')
-  }
-})
+    const local = loadLocal();
+    const idx = local.findIndex(p => p.id === id);
 
+    if (idx !== -1) {
+      local[idx] = { ...local[idx], ...data };
+    } else {
+      local.push({ id, ...data, local: true });
+    }
+
+    saveLocal(local);
+    return { id, ...data };
+  } catch (err) {
+    return rejectWithValue(err.message || 'Update failed');
+  }
+});
+
+// Delete product (local only)
 export const deleteProduct = createAsyncThunk('products/delete', async (id, { rejectWithValue }) => {
   try {
-    const res = await axios.delete(`${API_BASE}/products/${id}`)
-    return { id }
+    const local = loadLocal().filter(p => p.id !== id);
+    saveLocal(local);
+    return { id };
   } catch (err) {
-    return rejectWithValue(err.message || 'Delete failed')
+    return rejectWithValue(err.message || 'Delete failed');
   }
-})
+});
 
 const productsSlice = createSlice({
   name: 'products',
@@ -46,33 +82,37 @@ const productsSlice = createSlice({
     items: [],
     total: 0,
     loading: false,
-    error: null
+    error: null,
   },
   reducers: {},
   extraReducers(builder) {
     builder
-      .addCase(fetchProducts.pending, (state) => { state.loading = true; state.error = null })
+      .addCase(fetchProducts.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(fetchProducts.fulfilled, (state, action) => {
-        state.loading = false
-        state.items = action.payload.products || []
-        state.total = action.payload.total || state.items.length
+        state.loading = false;
+        state.items = action.payload.products;
+        state.total = action.payload.total;
       })
       .addCase(fetchProducts.rejected, (state, action) => {
-        state.loading = false; state.error = action.payload
+        state.loading = false;
+        state.error = action.payload;
       })
       .addCase(addProduct.fulfilled, (state, action) => {
-        state.items.unshift(action.payload)
-        state.total += 1
+        state.items.push(action.payload);
+        state.total = state.items.length;
       })
       .addCase(updateProduct.fulfilled, (state, action) => {
-        const idx = state.items.findIndex(p => p.id === action.payload.id)
-        if (idx !== -1) state.items[idx] = action.payload
+        const idx = state.items.findIndex(p => p.id === action.payload.id);
+        if (idx !== -1) state.items[idx] = action.payload;
       })
       .addCase(deleteProduct.fulfilled, (state, action) => {
-        state.items = state.items.filter(p => p.id !== action.payload.id)
-        state.total = state.items.length
-      })
-  }
-})
+        state.items = state.items.filter(p => p.id !== action.payload.id);
+        state.total = state.items.length;
+      });
+  },
+});
 
-export default productsSlice.reducer
+export default productsSlice.reducer;

@@ -1,14 +1,20 @@
-import React, { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { fetchProducts } from '../slices/productsSlice'
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchProducts } from '../slices/productsSlice';
 
 export default function Products() {
-  const dispatch = useDispatch()
-  const { items, loading, error, total } = useSelector(s => s.products)
+  const dispatch = useDispatch();
+  const { items, loading, error, total } = useSelector(s => s.products);
+  const [page, setPage] = useState(1);
+  const perPage = 20; // how many to show per page
 
   useEffect(() => {
-    dispatch(fetchProducts())
-  }, [dispatch])
+    dispatch(fetchProducts());
+  }, [dispatch]);
+
+  const totalPages = Math.ceil(total / perPage);
+  const start = (page - 1) * perPage;
+  const paginated = items.slice(start, start + perPage);
 
   return (
     <div>
@@ -16,12 +22,13 @@ export default function Products() {
       {loading && <div>Loading...</div>}
       {error && <div className="error">{error}</div>}
       <div>Total records: {total}</div>
+
       <table className="table">
         <thead>
           <tr><th>ID</th><th>Title</th><th>Price</th><th>Category</th></tr>
         </thead>
         <tbody>
-          {items.map(p => (
+          {paginated.map(p => (
             <tr key={p.id}>
               <td>{p.id}</td>
               <td>{p.title}</td>
@@ -31,6 +38,13 @@ export default function Products() {
           ))}
         </tbody>
       </table>
+
+      {/* Pagination Controls */}
+      <div style={{ marginTop: '15px', display: 'flex', justifyContent: 'center', gap: '8px' }}>
+        <button disabled={page === 1} onClick={() => setPage(p => p - 1)}>Prev</button>
+        <span>Page {page} of {totalPages}</span>
+        <button disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>Next</button>
+      </div>
     </div>
-  )
+  );
 }
