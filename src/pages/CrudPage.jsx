@@ -9,7 +9,6 @@ export default function CrudPage() {
   const [form, setForm] = useState({ title: '', price: '', description: '', category: '' });
   const [editId, setEditId] = useState(null);
 
-  // 🧭 Persistent pagination
   const savedPage = Number(localStorage.getItem('crudPage') || 1);
   const [page, setPage] = useState(savedPage);
   const perPage = 10;
@@ -19,7 +18,6 @@ export default function CrudPage() {
     dispatch(fetchProducts());
   }, [dispatch]);
 
-  // Save pagination state
   useEffect(() => {
     localStorage.setItem('crudPage', page);
   }, [page]);

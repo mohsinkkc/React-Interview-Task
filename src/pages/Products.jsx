@@ -6,7 +6,6 @@ export default function Products() {
   const dispatch = useDispatch();
   const { items, loading, error, total } = useSelector((s) => s.products);
 
-  // 🧭 Persistent pagination
   const savedPage = Number(localStorage.getItem('productsPage') || 1);
   const [page, setPage] = useState(savedPage);
   const perPage = 20; // how many products per page
@@ -15,7 +14,6 @@ export default function Products() {
     dispatch(fetchProducts());
   }, [dispatch]);
 
-  // Save page in localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem('productsPage', page);
   }, [page]);

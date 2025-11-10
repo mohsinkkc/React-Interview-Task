@@ -3,20 +3,16 @@ import axios from 'axios';
 
 const API_BASE = 'https://dummyjson.com';
 
-// Helpers for local persistence
 const loadLocal = () => JSON.parse(localStorage.getItem('localProducts') || '[]');
 const saveLocal = (data) => localStorage.setItem('localProducts', JSON.stringify(data));
 
-// Fetch products (API + local merged)
 export const fetchProducts = createAsyncThunk('products/fetch', async (_, { rejectWithValue }) => {
   try {
     const res = await axios.get(`${API_BASE}/products?limit=200`);
     const apiProducts = res.data.products || [];
 
-    // Load locally stored items
     const local = loadLocal();
 
-    // Merge API + local products
     const merged = [...apiProducts, ...local];
     return { products: merged, total: merged.length };
   } catch (err) {
@@ -24,7 +20,6 @@ export const fetchProducts = createAsyncThunk('products/fetch', async (_, { reje
   }
 });
 
-// Add product with sequential ID
 export const addProduct = createAsyncThunk('products/add', async (product, { getState, rejectWithValue }) => {
   try {
     const state = getState().products;
@@ -35,7 +30,6 @@ export const addProduct = createAsyncThunk('products/add', async (product, { get
 
     const newProduct = { id: newId, ...product, local: true };
 
-    // Save locally
     const local = loadLocal();
     local.push(newProduct);
     saveLocal(local);
@@ -46,7 +40,6 @@ export const addProduct = createAsyncThunk('products/add', async (product, { get
   }
 });
 
-// Update product (local only)
 export const updateProduct = createAsyncThunk('products/update', async ({ id, data }, { rejectWithValue }) => {
   try {
     const local = loadLocal();
@@ -65,7 +58,6 @@ export const updateProduct = createAsyncThunk('products/update', async ({ id, da
   }
 });
 
-// Delete product (local only)
 export const deleteProduct = createAsyncThunk('products/delete', async (id, { rejectWithValue }) => {
   try {
     const local = loadLocal().filter(p => p.id !== id);
