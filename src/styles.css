@@ -11,7 +11,7 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 12px 20px;
-    background: #0b5;
+    background: rgb(198, 19, 138);
     color: #fff
 }
 
@@ -52,7 +52,7 @@ body {
 }
 
 .btn {
-    background: #0b5;
+    background: rgb(8, 43, 148);
     color: #fff;
     border: none;
     padding: 8px 12px;
